@@ -1,8 +1,10 @@
 package no.hvl.dat109;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Terningspill {
 
@@ -37,25 +39,38 @@ public class Terningspill {
         spillere.add(new Spiller(navn));
     }
 
-    public void spill(){
+    public void spill(List<Spiller> spillere){
 
         for (int i = 0; i < spillere.size(); i++){
             spillere.get(i).spill(kopp);
             System.out.println(spillere.get(i));
             System.out.println();
         }
-        System.out.println("Vinneren er: " + finnVinner().getNavn() + ". Winner Winner Chicken Dinner!!!!");
 
     }
 
+    public void spill(){
+        spill(spillere);
+        System.out.println("Vinneren er: " + finnVinner().getNavn() + ". Winner Winner Chicken Dinner!!!!");
+    }
+
     public Spiller finnVinner(){
-        Spiller vinner = spillere.get(0);
-        for (int i = 1; i < spillere.size(); i++){
-            if (spillere.get(i).getVerdi() > vinner.getVerdi()) {
-                vinner = spillere.get(i);
+
+        Spiller vinner = spillere.stream().max(Comparator.comparingInt(Spiller::getVerdi)).orElse(null);
+
+        if (vinner != null){
+            List<Spiller> vinnere = spillere.stream().filter(x -> x.getVerdi() == vinner.getVerdi()).collect(Collectors.toList());
+
+
+            while (vinnere.size() > 1){
+                spill(vinnere);
+                Spiller nyVinner = spillere.stream().max(Comparator.comparingInt(Spiller::getVerdi)).orElse(null);
+                vinnere = spillere.stream().filter(x -> x.getVerdi() == nyVinner.getVerdi()).collect(Collectors.toList());
             }
+            return vinnere.get(0);
         }
-        return vinner;
+        return null;
+
     }
 
 }

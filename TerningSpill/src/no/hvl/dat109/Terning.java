@@ -33,5 +33,6 @@ public class Terning {
     public void trill(){
         verdi = rand.nextInt(6)+1;
 
+
     }
 }
